@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Tlab\PtZipcodeFinder\Command\ImportCommand;
+
+$application = new Application('Portugal Zipcode Finder', '1.0.0');
+$application->add(new ImportCommand());
+$application->run();
