@@ -1,0 +1,6 @@
+todos_cp/
+.idea
+/composer.lock
+/vendor/
+/.phpunit.cache/
+/data/zipcode.sqlite
