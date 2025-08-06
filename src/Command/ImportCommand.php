@@ -25,8 +25,8 @@ class ImportCommand extends Command
     {
         $this
             ->setDescription(self::$defaultDescription)
-            ->addArgument('directory', InputArgument::REQUIRED, 'Directory containing CSV files', 'todos_cp')
-            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'Path to SQLite database file', null)
+            ->addArgument('directory', InputArgument::REQUIRED, 'Directory containing CSV files')
+            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'Path to SQLite database file')
             ->addOption('truncate', 't', InputOption::VALUE_NONE, 'Truncate tables before import');
     }
 
@@ -34,11 +34,18 @@ class ImportCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
         $directory = $input->getArgument('directory');
+        dump($directory);
         $databasePath = $input->getOption('database');
+        dump($databasePath);
 
         // Validate directory
         if (!is_dir($directory)) {
             $this->io->error("Directory '$directory' does not exist.");
+            return Command::FAILURE;
+        }
+
+        if (!is_dir($databasePath)) {
+            $this->io->error("Database path '$directory' does not exist");
             return Command::FAILURE;
         }
 

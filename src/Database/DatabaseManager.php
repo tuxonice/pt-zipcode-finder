@@ -92,7 +92,7 @@ class DatabaseManager
     private function connect(): void
     {
         try {
-            $this->pdo = new PDO('sqlite:' . $this->databasePath);
+            $this->pdo = new PDO('sqlite:' . $this->databasePath.'/zipcode_finder.sqlite');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->exec('PRAGMA foreign_keys = ON');
         } catch (PDOException $e) {
@@ -102,8 +102,8 @@ class DatabaseManager
 
     private function ensureDatabaseDirectoryExists(): void
     {
-        if (!is_file($this->databasePath) || !is_writable($this->databasePath)) {
-            throw new RuntimeException("Database directory '{$this->databasePath}' does not exists.");
+        if (!is_writable($this->databasePath)) {
+            throw new RuntimeException("Database directory '{$this->databasePath}' does not exists");
         }
     }
 }
