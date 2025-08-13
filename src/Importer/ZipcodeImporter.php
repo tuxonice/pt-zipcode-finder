@@ -64,11 +64,10 @@ class ZipcodeImporter
      * Import all data from the specified directory
      *
      * @param string $directory Path to directory containing CSV files
-     * @param bool $truncate Whether to truncate tables before import
      * @return bool True if import was successful, false otherwise
      * @throws RuntimeException If directory doesn't exist
      */
-    public function import(string $directory, bool $truncate = false): bool
+    public function import(string $directory): bool
     {
         // Reset counters
         $this->importedDistricts = 0;
@@ -85,13 +84,6 @@ class ZipcodeImporter
         $this->databaseManager->createTables();
         $this->log('Database tables created successfully', 'success');
         
-        // Truncate tables if requested
-        if ($truncate) {
-            $this->log('Truncating database tables', 'info');
-            $this->truncateTables();
-            $this->log('Database tables truncated successfully', 'success');
-        }
-
         // Import data
         try {
             $this->importDistricts($directory);
