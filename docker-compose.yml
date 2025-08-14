@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # Service for running tests
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash -c "composer install"
+    
+  # Service for development (provides a shell)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash
