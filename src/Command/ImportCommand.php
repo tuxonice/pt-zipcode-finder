@@ -21,58 +21,60 @@ class ImportCommand extends Command
     {
         $this
             ->setDescription(self::$defaultDescription)
-            ->addOption('directory', 'dir', InputOption::VALUE_REQUIRED, 'Directory containing CSV files')
-            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'Path to SQLite database file');
+            ->addOption('source', 's', InputOption::VALUE_REQUIRED, 'Directory containing CSV files')
+            ->addOption('database', 'd', InputOption::VALUE_REQUIRED, 'Directory for SQLite database file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
-        $directory = $input->getOption('directory');
+        $sourceFolder = $input->getOption('source');
         $databasePath = $input->getOption('database');
 
+        // Make paths relative to current working directory if they're not absolute
+        $currentWorkingDir = getcwd();
+
+        $sourceFolder = realpath($currentWorkingDir . DIRECTORY_SEPARATOR . $sourceFolder);
+        $databasePath = realpath($currentWorkingDir . DIRECTORY_SEPARATOR . $databasePath);
+
         // Ensure directory path is provided
-        if (!$directory) {
-            $this->io->error('Directory path is required. Use --directory option to specify it.');
+        if (!$sourceFolder) {
+            $this->io->error('Source directory is required. Use --source option to specify it.');
+
             return Command::FAILURE;
         }
 
         // Ensure database path is provided
         if (!$databasePath) {
-            $this->io->error('Database path is required. Use --database option to specify it.');
+            $this->io->error('Database directory is required. Use --database option to specify it.');
+
             return Command::FAILURE;
         }
 
-        // Make paths relative to current working directory if they're not absolute
-        $currentWorkingDir = getcwd();
-
-        $directory = $currentWorkingDir . DIRECTORY_SEPARATOR . $directory;
-        $databasePath = $currentWorkingDir . DIRECTORY_SEPARATOR . $databasePath;
-
         // Validate directory
-        if (!is_dir($directory)) {
-            $this->io->error("Directory '$directory' does not exist.");
+        if (!$this->verifySourceFolder($sourceFolder)) {
+//            $this->io->error("Directory '$sourceFolder' does not exist");
+
             return Command::FAILURE;
         }
 
         // Ensure database directory exists
-        $databaseDir = dirname($databasePath);
-        if (!is_dir($databaseDir)) {
-            $this->io->note("Creating database directory: $databaseDir");
-            if (!mkdir($databaseDir, 0755, true) && !is_dir($databaseDir)) {
-                $this->io->error("Failed to create database directory: $databaseDir");
-                return Command::FAILURE;
-            }
-        }
+//        if (!$this->verifyDatabaseFolder($databasePath)) {
+//            $this->io->note("Creating database directory: $databaseDir");
+//            if (!mkdir($databaseDir, 0755, true) && !is_dir($databaseDir)) {
+//                $this->io->error("Failed to create database directory: $databaseDir");
+//                return Command::FAILURE;
+//            }
+//        }
 
         // If database file exists, remove it for a fresh import
-        if (file_exists($databasePath)) {
-            $this->io->note("Removing existing database file for fresh import");
-            if (!unlink($databasePath)) {
-                $this->io->error("Failed to remove existing database file: $databasePath");
-                return Command::FAILURE;
-            }
-        }
+//        if (file_exists($databasePath)) {
+//            $this->io->note("Removing existing database file for fresh import");
+//            if (!unlink($databasePath)) {
+//                $this->io->error("Failed to remove existing database file: $databasePath");
+//                return Command::FAILURE;
+//            }
+//        }
 
         // Create the importer with a logger callback
         $importer = new ZipcodeImporter($databasePath);
@@ -97,7 +99,7 @@ class ImportCommand extends Command
 
         // Run the import
         try {
-            $result = $importer->import($directory);
+            $result = $importer->import($sourceFolder);
             
             if ($result) {
                 $this->io->success(sprintf(
@@ -114,5 +116,31 @@ class ImportCommand extends Command
             $this->io->error('Import failed: ' . $e->getMessage());
             return Command::FAILURE;
         }
+    }
+
+    private function verifySourceFolder(string $sourceFolder): bool
+    {
+        $files = [
+            'municipalities.csv' => $sourceFolder . DIRECTORY_SEPARATOR . 'municipalities.csv',
+            'districts.csv' => $sourceFolder . DIRECTORY_SEPARATOR . 'districts.csv',
+            'zipcodes.csv' => $sourceFolder . DIRECTORY_SEPARATOR . 'zipcodes.csv',
+
+        ];
+        foreach($files as $file => $path) {
+            if (!file_exists($path) || !is_readable($path)) {
+                $this->io->error('Unable to find ' . $file. ' file');
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function verifyDatabaseFolder(string $databasePath): bool
+    {
+
+        //TODO: check for database file: zipcode.sqlite
+        return false;
     }
 }
