@@ -19,8 +19,16 @@ class ImportCommand extends Command
 
     private const DEFAULT_DATABASE_NAME_EXTENSION = '.sqlite';
 
+    /**
+     * Summary of defaultName
+     * @var string
+     */
     protected static $defaultName = 'import';
 
+    /**
+     * Summary of defaultDescription
+     * @var string
+     */
     protected static $defaultDescription = 'Import Portugal zipcode data from CSV files';
 
     private SymfonyStyle $io;

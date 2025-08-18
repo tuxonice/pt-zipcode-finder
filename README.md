@@ -5,8 +5,9 @@
 [![PHP Version](https://img.shields.io/badge/PHP-%E2%89%A5%208.1-777bb4?logo=php)](composer.json)
 [![Code Style: PSR-12](https://img.shields.io/badge/code_style-PSR--12-4baf4f.svg)](https://www.php-fig.org/psr/psr-12/)
 
-A PHP package for searching Portugal zipcodes using a SQLite database. 
-This package provides tools to import zipcode data from CSV files and perform searches based on zipcode, locality, or street name.
+A PHP package for searching Portugal zipcodes using a SQLite database.
+This package provides tools to import zipcode data from CSV files and perform searches based on zipcode, locality, or
+street name.
 
 ## Features
 
@@ -23,6 +24,23 @@ Soon...
 
 ## Usage
 
+### Get data to import
+
+The zipcode data can be obtained from
+the [CTT website](https://appserver2.ctt.pt/feapl_2/app/open/postalCodeSearch/postalCodeSearch.jspx).
+You need register and log in to access the data.
+
+The downloaded file is a zip file containing the following files:
+
+| File          | Description         | Rename to          |
+|---------------|---------------------|--------------------|
+| concelhos.txt | Municipalities list | municipalities.csv |
+| distritos.txt | Districs list       | districts.csv      |
+| todos_cp.txt  | Zipcodes list       | zipcodes.csv       |
+| leiame.txt    | Readme file         |                    |
+
+Extract the files from the zip file and rename them to the expected names.
+
 ### Importing Data
 
 Before you can search for zipcodes, you need to import the data from the CSV files:
@@ -31,8 +49,8 @@ Before you can search for zipcodes, you need to import the data from the CSV fil
 # Import from a CSV directory into a database directory
 # Syntax: php bin/zipcode-importer import <csv-source-dir> <database-dir> [--dbname=zipcodes]
 
-# Example: import CSVs from ./todos_cp and create ./data/zipcodes.sqlite
-php bin/zipcode-importer import todos_cp data --dbname=zipcodes
+# Example: import CSVs from ./source-dir and create ./data-dir/zipcodes.sqlite
+php bin/zipcode-importer import source-dir data-dir --dbname=zipcodes
 
 # Using absolute paths
 php bin/zipcode-importer import /abs/path/to/csv /abs/path/to/data --dbname=mydb

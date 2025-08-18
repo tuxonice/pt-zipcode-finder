@@ -1,7 +1,27 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+// Attempt to load Composer's autoloader in various contexts
+// 1) When running from the repo directly (development)
+// 2) When installed as a dependency and executed via vendor/bin
+$autoloadPaths = [
+    __DIR__ . '/../vendor/autoload.php',      // dev: package repo root
+    __DIR__ . '/../../../autoload.php',       // prod: project vendor root
+];
+
+$autoloadLoaded = false;
+foreach ($autoloadPaths as $path) {
+    if (file_exists($path)) {
+        require $path;
+        $autoloadLoaded = true;
+        break;
+    }
+}
+
+if (!$autoloadLoaded) {
+    fwrite(STDERR, "Could not locate Composer autoload. Tried:\n - " . implode("\n - ", $autoloadPaths) . "\n");
+    exit(1);
+}
 
 use Symfony\Component\Console\Application;
 use Tlab\PtZipcodeFinder\Command\ImportCommand;
