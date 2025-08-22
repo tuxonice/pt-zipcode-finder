@@ -20,7 +20,9 @@ street name.
 
 ## Installation
 
-Soon...
+```bash
+composer require tuxonice/pt-zipcode-finder
+```
 
 ## Usage
 
